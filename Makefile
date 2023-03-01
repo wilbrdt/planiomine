@@ -7,6 +7,8 @@ DOCKER_UID           = $(shell id -u)
 DOCKER_GID           = $(shell id -g)
 DOCKER_USER          = $(DOCKER_UID):$(DOCKER_GID)
 COMPOSE              = DOCKER_USER=$(DOCKER_USER) docker compose
+COMPOSE_RUN          = $(COMPOSE) run --rm
+DOCKERIZE            = $(COMPOSE_RUN) dockerize
 
 # ==============================================================================
 # RULES
@@ -20,8 +22,24 @@ bootstrap: ## bootstrap project
 .PHONY: bootstrap
 
 run: ## start redmine stack
-	@$(COMPOSE) up
+run: \
+	run-db \
+	run-redmine
 .PHONY: run
+
+run-db: ## start mysql database
+	@$(COMPOSE) up -d db
+	@echo "Waiting for db to be up and running after importing..."
+	@$(DOCKERIZE) -wait tcp://db:3306 -timeout 60s
+.PHONY: run-db
+
+run-redmine: ## start redmine instance
+	@$(COMPOSE) up redmine
+.PHONY: run-redmine
+
+stop: ## stop redmine stack
+	@$(COMPOSE) down
+.PHONY: stop
 
 # -- Misc
 help:

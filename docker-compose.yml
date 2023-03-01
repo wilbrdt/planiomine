@@ -12,14 +12,18 @@ services:
       REDMINE_DB_MYSQL: db
       REDMINE_DB_PASSWORD: example
       REDMINE_SECRET_KEY_BASE: supersecretkey
-    depends_on: 
-      - db
 
   db:
     image: mysql:5.7
     restart: always
+    ports:
+      - 3306:3306
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: redmine
+
+  # -- tools
+  dockerize:
+    image: jwilder/dockerize
