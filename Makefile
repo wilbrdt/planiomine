@@ -18,7 +18,7 @@ default: help
 bootstrap: ## bootstrap project
 	mkdir -p files
 	mkdir -p sql
-	./extract_backup.sh
+	. extract_backup.sh
 .PHONY: bootstrap
 
 run: ## start redmine stack
